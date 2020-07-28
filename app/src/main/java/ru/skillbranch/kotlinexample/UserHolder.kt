@@ -59,12 +59,16 @@ object UserHolder {
                 val passwordHash: String?
                 csv[2].split(":")
                     .run {
-                        salt = if (first().isNullOrBlank()) null else first().trim()
-                        passwordHash = if (last().isNullOrBlank()) null else last().trim()
+                        salt = if (first().isBlank()) null else first().trim()
+                        passwordHash = if (last().isBlank()) null else last().trim()
                     }
 
-                if (!fullName.isNullOrBlank()) {
-                    userList.add(User.importUser(fullName, email, passwordHash, salt, phone))
+                if (!fullName.isBlank()) {
+                    User.importUser(fullName, email, passwordHash, salt, phone)
+                        .also { user ->
+                            map[user.login] = user
+                            userList.add(user)
+                        }
                 }
             }
         }
